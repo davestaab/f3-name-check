@@ -4,6 +4,6 @@ dist
 dist-ssr
 *.local
 .idea
-
+dist-functions
 # Local Netlify folder
 .netlify
