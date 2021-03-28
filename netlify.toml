@@ -13,7 +13,7 @@ to = '/index.html'
 command = 'npm run build'
 environment = { NODE_VERSION = '14' }
 publish = 'dist'
-functions = "functions"
+functions = 'dist'
 
 [dev]
 autolaunch = false

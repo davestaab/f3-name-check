@@ -1,16 +1,19 @@
-const fetch = require('node-fetch')
+import fetch from 'node-fetch';
+import {APIGatewayEvent} from 'aws-lambda'
 
-const handler = async function (event) {
+
+export async function handler(event: APIGatewayEvent) {
   try {
-    const { queryStringParameters  } = event;
-    const { search } = queryStringParameters;
-    if(search === undefined) return ok([])
+    const {queryStringParameters} = event;
+    const search = queryStringParameters?.search ?? undefined;
+
+    if (search === undefined) return ok([])
     const response = await fetch(`https://f3knoxville.com/wp-json/wp/v2/tags?search=${search}`, {
-      headers: { Accept: 'application/json' },
+      headers: {Accept: 'application/json'},
     })
     if (!response.ok) {
       // NOT res.status >= 200 && res.status < 300
-      return { statusCode: response.status, body: response.statusText }
+      return {statusCode: response.status, body: response.statusText}
     }
     const data = await response.json()
     return ok(data);
@@ -20,14 +23,13 @@ const handler = async function (event) {
     return {
       statusCode: 500,
       // Could be a custom message or object i.e. JSON.stringify(err)
-      body: JSON.stringify({ msg: error.message }),
+      body: JSON.stringify({msg: error.message}),
     }
   }
 }
 
-module.exports = { handler }
 
-function ok(data) {
+function ok(data: any) {
   return {
     statusCode: 200,
     body: JSON.stringify(data),
