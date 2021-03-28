@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>F3 Knoxville Name Check</h1>
-    <input>
+<!--    <input>-->
     <p v-for="r in results" v-if="results.length !== 0">
       {{ r.name }} posted {{ r.count }} times
     </p>
