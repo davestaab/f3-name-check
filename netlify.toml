@@ -10,7 +10,7 @@ status = 200
 to = '/index.html'
 
 [build]
-command = 'npm run build'
+command = 'npm run test && npm run build:netlify && npm run build'
 environment = { NODE_VERSION = '14' }
 publish = 'dist'
 functions = 'dist'

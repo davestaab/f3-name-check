@@ -7,7 +7,8 @@
     "build:netlify": "netlify-lambda build functions",
     "serve": "vite preview",
     "netlify": "netlify dev",
-    "test": "jest"
+    "test": "jest",
+    "ts-check": "tsc --noEmit ../functions/*.ts"
   },
   "dependencies": {
     "vue": "^3.0.5",
