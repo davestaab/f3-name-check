@@ -1,13 +1,13 @@
 import fetch from 'node-fetch';
-import {APIGatewayEvent} from 'aws-lambda'
+import {APIGatewayEvent, APIGatewayProxyResult} from 'aws-lambda'
 
 
-export async function handler(event: APIGatewayEvent) {
+export async function handler(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
   try {
     const {queryStringParameters} = event;
     const search = queryStringParameters?.search ?? undefined;
 
-    if (search === undefined) return ok([])
+    if (search === undefined || search === '') return ok([])
     const response = await fetch(`https://f3knoxville.com/wp-json/wp/v2/tags?search=${search}`, {
       headers: {Accept: 'application/json'},
     })

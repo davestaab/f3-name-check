@@ -33,10 +33,36 @@
           </button>
         </div>
       </div>
+      <div class="max-w-sm mx-auto h-8 mb-4">
+        <div
+            v-if="stateValidating || statePending"
+            class="flex items-center ">
+          <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
+          <svg width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" class="animate-spin mr-4">
+            <defs>
+              <linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a">
+                <stop stop-color="rgb(51,65,85)" stop-opacity="0" offset="0%"/>
+                <stop stop-color="rgb(51,65,85)" stop-opacity=".631" offset="63.146%"/>
+                <stop stop-color="rgb(51,65,85)" offset="100%"/>
+              </linearGradient>
+            </defs>
+            <g fill="none" fill-rule="evenodd">
+              <g transform="translate(1 1)">
+                <!--                <rect height="36" width="36" fill="black"></rect>-->
+                <path d="M36 18c0-9.94-8.06-18-18-18" id="Oval-2" stroke="url(#a)" stroke-width="2"/>
+                <circle fill="#fff" cx="36" cy="18" r="1"/>
+              </g>
+            </g>
+          </svg>
+          <span class="flex-1">
+          Loading...
+        </span>
+        </div>
+      </div>
       <a
           :href="r.link"
           target="_blank"
-          v-for="r in results" :key="r.id" v-if="results.length"
+          v-for="r in results" :key="r.id" v-if="hasResults"
           class="block py-8 px-8 max-w-sm mx-auto bg-blueGray-600 rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:space-y-0 sm:space-x-6 mb-4">
         <div class="space-y-2">
           <div class="space-y-0.5">
@@ -57,34 +83,38 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue'
+import {defineComponent, ref, computed} from 'vue'
+import useSWRV from "swrv";
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import {fetcher} from "./api/api";
 
 export default defineComponent({
   name: 'App',
   components: {},
   setup() {
-    const results = ref([]);
     const name = ref('');
-    onMounted(async () => {
-      results.value = await checkName('pool');
-    });
+    const searchName = ref('');
 
-    async function search() {
-      results.value = await checkName(name.value);
+    const {
+      data: results,
+      isValidating,
+      error
+    } = useSWRV<UserTag>(() => `/api/user-search?search=${searchName.value}`, key =>
+            fetch(key)
+                .then(res => res.json())
+        , {revalidateOnFocus: false, cache: new LocalStorageCache()});
+
+    const hasResults = computed<boolean>(() => results.value?.length > 0 ?? false)
+    const stateValidating = computed<boolean>(() => results.value && isValidating.value)
+    const statePending = computed<boolean>(() => results.value === undefined && !error.value)
+
+    // const stateSuccess = computed<boolean>(() => data.value && !error.value)
+
+    function search() {
+      searchName.value = name.value;
     }
 
-    return {results, search, name}
+    return {results, search, name, hasResults, stateValidating, statePending}
   }
 })
-
-async function checkName(name: string) {
-  try {
-    if (name === '') return [];
-    const resp = await fetch(`/api/user-search?search=${name}`)
-    return await resp.json();
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
-}
 </script>

@@ -15,6 +15,13 @@ describe('user search', function () {
     const data = JSON.parse(results.body);
     expect(data.length).toBe(0);
   });
+
+  it('should return empty results if empty search param', async function () {
+    const results2 = await handler(createSearchParam(''))
+    expect(results2.statusCode).toBe(200);
+    const data2 = JSON.parse(results2.body);
+    expect(data2.length).toBe(0);
+  });
 });
 
 
