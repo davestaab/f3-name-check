@@ -59,20 +59,20 @@
         </span>
         </div>
       </div>
-      <a
-          :href="r.link"
-          target="_blank"
-          v-for="r in results" :key="r.id" v-if="hasResults"
-          class="block py-8 px-8 max-w-sm mx-auto bg-blueGray-600 rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:space-y-0 sm:space-x-6 mb-4">
+      <a :href="r.link"
+         :key="r.id"
+         v-for="r in results"
+         v-if="hasResults"
+         target="_blank"
+         data-testid="user-card"
+         class="block py-8 px-8 max-w-sm mx-auto bg-blueGray-600 rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:space-y-0 sm:space-x-6 mb-4">
         <div class="space-y-2">
-          <div class="space-y-0.5">
-            <p class="text-lg text-white font-semibold">
-              {{ r.name }}
-            </p>
-            <p class="text-blueGray-300 font-medium">
-              posted {{ r.count }} times
-            </p>
-          </div>
+          <p class="text-lg text-white font-semibold">
+            {{ r.name }}
+          </p>
+          <p class="text-blueGray-300 font-medium">
+            posted {{ r.count }} times
+          </p>
         </div>
       </a>
       <div v-else class="text-center">
