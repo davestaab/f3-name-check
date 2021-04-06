@@ -86,7 +86,7 @@
 import {defineComponent, ref, computed} from 'vue'
 import useSWRV from "swrv";
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import {fetcher} from "./api/api";
+import {UserTag} from "./types";
 
 export default defineComponent({
   name: 'App',
