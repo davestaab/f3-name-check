@@ -1,4 +1,4 @@
-import {render} from "@testing-library/vue";
+import {findByTestId, getByTestId, getByText, render} from "@testing-library/vue";
 import App from "../App.vue";
 import userEvent from "@testing-library/user-event";
 import {UserTag} from "../types";
@@ -42,6 +42,34 @@ describe('name check app', function () {
     const cards = await findAllByTestId('user-card')
     expect(cards.length).toBe(1);
     await findByText('Judge Judy');
+  });
+
+  describe('clear functionality', function () {
+    it('should show clear if search is active', async function () {
+      mockedFetch.mockReturnValue(createResponse(['Spotter']));
+
+      const {getByLabelText, findByTestId} = render(App);
+      const input = getByLabelText('Nickname');
+      await userEvent.type(input, 'spotter{enter}');
+      await findByTestId('clear-search')
+    });
+
+    it('should not show clear if no search', function () {
+      const {queryByTestId} = render(App);
+      expect(queryByTestId('clear-search')).toBeNull();
+    });
+
+    it('should clear search', async function () {
+      mockedFetch.mockReturnValue(createResponse(['Spotter']));
+      const {getByTestId, queryByTestId, getByText, getByLabelText} = render(App);
+      const input = getByLabelText('Nickname');
+      await userEvent.type(input, 'spotter{enter}');
+      const clearSearch = getByTestId('clear-search')
+      await userEvent.click(clearSearch);
+      expect(queryByTestId('clear-search')).toBeNull();
+      getByText('No Results')
+      expect((input as HTMLInputElement).value).toBe('');
+    });
   });
 });
 

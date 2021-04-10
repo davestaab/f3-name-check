@@ -35,10 +35,10 @@
       </div>
       <div class="max-w-sm mx-auto h-8 mb-4">
         <div
-            v-if="stateValidating || statePending"
-            class="flex items-center ">
+
+            class="flex items-center h-full">
           <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
-          <svg width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" class="animate-spin mr-4">
+          <svg v-if="stateValidating || statePending" width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" class="animate-spin mr-4">
             <defs>
               <linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a">
                 <stop stop-color="rgb(51,65,85)" stop-opacity="0" offset="0%"/>
@@ -55,8 +55,14 @@
             </g>
           </svg>
           <span class="flex-1">
-          Loading...
-        </span>
+            <span  v-if="stateValidating || statePending">
+              Loading...
+            </span>
+          </span>
+          <!--https://linearicons.com/free/icon/cross-->
+          <svg width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-testid="clear-search" v-if="showClearResults" @click="clearResults">
+            <path class="path1" d="M548.203 537.6l289.099-289.098c9.998-9.998 9.998-26.206 0-36.205-9.997-9.997-26.206-9.997-36.203 0l-289.099 289.099-289.098-289.099c-9.998-9.997-26.206-9.997-36.205 0-9.997 9.998-9.997 26.206 0 36.205l289.099 289.098-289.099 289.099c-9.997 9.997-9.997 26.206 0 36.203 5 4.998 11.55 7.498 18.102 7.498s13.102-2.499 18.102-7.499l289.098-289.098 289.099 289.099c4.998 4.998 11.549 7.498 18.101 7.498s13.102-2.499 18.101-7.499c9.998-9.997 9.998-26.206 0-36.203l-289.098-289.098z"></path>
+          </svg>
         </div>
       </div>
       <a :href="r.link"
@@ -99,22 +105,25 @@ export default defineComponent({
       data: results,
       isValidating,
       error
-    } = useSWRV<UserTag>(() => `/api/user-search?search=${searchName.value}`, key =>
+    } = useSWRV<UserTag[]>(() => `/api/user-search?search=${searchName.value}`, key =>
             fetch(key)
                 .then(res => res.json())
         , {revalidateOnFocus: false, cache: new LocalStorageCache()});
 
-    const hasResults = computed<boolean>(() => results.value?.length > 0 ?? false)
-    const stateValidating = computed<boolean>(() => results.value && isValidating.value)
+    const hasResults = computed<boolean>(() => (results.value?.length ?? 0) > 0)
+    const stateValidating = computed<boolean>(() => (results.value ?? false) && isValidating.value)
     const statePending = computed<boolean>(() => results.value === undefined && !error.value)
-
-    // const stateSuccess = computed<boolean>(() => data.value && !error.value)
-
+    const stateSuccess = computed<boolean>(() => (results.value ?? false) && !error.value)
+    const showClearResults = computed<boolean>(() => (searchName?.value ?? '').length > 0)
     function search() {
       searchName.value = name.value;
     }
+    function clearResults() {
+      searchName.value = '';
+      name.value = ''
+    }
 
-    return {results, search, name, hasResults, stateValidating, statePending}
+    return {results, search, name, hasResults, stateValidating, statePending, showClearResults, clearResults}
   }
 })
 </script>
