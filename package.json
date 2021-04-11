@@ -8,7 +8,7 @@
     "serve": "vite preview",
     "netlify": "netlify dev",
     "test": "jest",
-    "ts-check": "tsc --noEmit ../functions/*.ts"
+    "lint": "eslint \"/*/**/*.{js,ts,vue,json}\""
   },
   "dependencies": {
     "encoding": "^0.1.13",
@@ -28,18 +28,27 @@
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.37",
     "@types/node-fetch": "^2.5.8",
+    "@typescript-eslint/eslint-plugin": "^4.21.0",
+    "@typescript-eslint/parser": "^4.21.0",
     "@vitejs/plugin-vue": "^1.1.4",
     "@vue/compiler-sfc": "^3.0.5",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
     "autoprefixer": "^10.2.5",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
+    "eslint": "^7.24.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.8.0",
     "jest": "^26.6.3",
+    "jest-fetch-mock": "^3.0.3",
     "netlify-lambda": "^2.0.3",
     "postcss": "^8.2.8",
+    "prettier": "^2.2.1",
     "tailwindcss": "^2.0.4",
     "ts-jest": "^26.5.4",
     "typescript": "^4.1.3",
     "vite": "^2.0.1",
-    "vue-jest": "^5.0.0-alpha.7",
-    "jest-fetch-mock": "^3.0.3"
+    "vue-jest": "^5.0.0-alpha.7"
   }
 }
