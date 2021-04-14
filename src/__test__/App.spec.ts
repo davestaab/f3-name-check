@@ -1,4 +1,4 @@
-import { render } from '@testing-library/vue';
+import { render, waitFor } from '@testing-library/vue';
 import App from '../App.vue';
 import userEvent from '@testing-library/user-event';
 import { UserTag } from '../types';
@@ -61,16 +61,57 @@ describe('name check app', function () {
 
     it('should clear search', async function () {
       mockedFetch.mockReturnValue(createResponse(['Spotter']));
-      const { getByTestId, queryByTestId, getByText, getByLabelText } = render(
-        App
-      );
+      const { getByTestId, queryByTestId, getByLabelText } = render(App);
       const input = getByLabelText('Nickname');
       await userEvent.type(input, 'spotter{enter}');
       const clearSearch = getByTestId('clear-search');
       await userEvent.click(clearSearch);
       expect(queryByTestId('clear-search')).toBeNull();
-      getByText('No Results');
       expect((input as HTMLInputElement).value).toBe('');
+    });
+  });
+
+  describe('nickname available card', function () {
+    it('should show nickname is available', async function () {
+      mockedFetch.mockReturnValue(createResponse([]));
+
+      const { getByLabelText, findByText } = render(App);
+      const input = getByLabelText('Nickname');
+      await userEvent.type(input, 'Available{enter}');
+      await findByText('Nickname');
+      await findByText('Available');
+      await findByText('is available!');
+    });
+
+    it('should not show available while search is validating', async function () {
+      mockedFetch.mockReturnValue(createResponse([]));
+      const {
+        getByLabelText,
+        findByText,
+        queryByText,
+        findByTestId,
+        queryByTestId,
+      } = render(App);
+      const testName = 'Available2';
+      const nickNameParts = ['Nickname', testName, 'is available!'];
+      const input = getByLabelText('Nickname');
+      await waitFor(() => {
+        expect(queryByTestId('loading-spinner')).toBeNull();
+      });
+      await userEvent.type(input, `${testName}{enter}`);
+
+      await findByTestId('loading-spinner');
+      expect(queryByText(testName)).toBeNull();
+      for (const p of nickNameParts) {
+        await findByText(p);
+      }
+      expect(queryByTestId('loading-spinner')).toBeNull();
+    });
+
+    it('should not show nickname is available if searchName is empty', async function () {
+      mockedFetch.mockReturnValue(createResponse([]));
+      const { queryByText } = render(App);
+      expect(queryByText('Nickname is available!')).toBeNull();
     });
   });
 });

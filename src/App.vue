@@ -45,6 +45,7 @@
             viewBox="0 0 38 38"
             xmlns="http://www.w3.org/2000/svg"
             class="animate-spin mr-4"
+            data-testid="loading-spinner"
           >
             <defs>
               <linearGradient
@@ -115,7 +116,18 @@
           </div>
         </a>
       </div>
-      <div v-else class="text-center">No Results</div>
+      <div
+        v-if="showNameAvailable"
+        class="block py-8 px-8 max-w-sm mx-auto bg-green-600 rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:space-y-0 sm:space-x-6 mb-4"
+      >
+        <div class="space-y-2">
+          <span class="text-lg text-gray-100 font-medium">Nickname </span>
+          <span class="text-lg text-white font-extrabold capitalize">
+            {{ searchName }}
+          </span>
+          <span class="text-lg text-gray-100 font-medium"> is available!</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -154,6 +166,12 @@
       const showClearResults = computed<boolean>(
         () => (searchName?.value ?? '').length > 0
       );
+      const showNameAvailable = computed<boolean>(
+        () =>
+          !hasResults.value &&
+          searchName.value !== '' &&
+          !(statePending.value || stateValidating.value)
+      );
 
       function search() {
         searchName.value = name.value;
@@ -168,11 +186,13 @@
         results,
         search,
         name,
+        searchName,
         hasResults,
         stateValidating,
         statePending,
         stateSuccess,
         showClearResults,
+        showNameAvailable,
         clearResults,
       };
     },
